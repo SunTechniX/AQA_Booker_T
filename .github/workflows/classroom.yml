@@ -43,8 +43,6 @@ jobs:
             echo "score=0" >> $GITHUB_OUTPUT
             echo "0" > tools/output/structure_score.txt
           fi
-      - name: Summary
-        run: echo "## 📁 Структура: $([ "${{ steps.check.outputs.score }}" = "10" ] && echo '✅' || echo '❌')" >> $GITHUB_STEP_SUMMARY
 
   # ─────────────────────────────────────────────────────────────
   # JOB 2: Линтинг flake8 (15 баллов)
@@ -79,8 +77,6 @@ jobs:
           echo "error_count=$error_count" >> $GITHUB_OUTPUT
           echo "$score" > tools/output/lint_score.txt
           echo "$error_count" > tools/output/lint_error_count.txt
-      - name: Summary
-        run: echo "## 🧹 Линтинг: $([ "${{ steps.lint.outputs.score }}" -ge 12 ] && echo '✅' || echo '⚠️') (${{ steps.lint.outputs.error_count }} ошибок)" >> $GITHUB_STEP_SUMMARY
 
   # ─────────────────────────────────────────────────────────────
   # JOB 3: Тесты авторизации (15 баллов)
@@ -111,7 +107,8 @@ jobs:
           pytest tests/test_auth.py -v --tb=short --timeout=60 --json-report --json-report-file=tools/output/auth_results.json 2>&1 | tee tools/output/auth_output.txt || true
           passed=$(python -c "import json; print(json.load(open('tools/output/auth_results.json')).get('summary',{}).get('passed',0))" 2>/dev/null) || passed=0
           total=$(python -c "import json; print(json.load(open('tools/output/auth_results.json')).get('summary',{}).get('total',0))" 2>/dev/null) || total=0
-          score=$(python -c "print(int(min(15, $passed * 2)))")
+          score=$((passed * 2))
+          [ $score -gt 15 ] && score=15
           echo "score=$score" >> $GITHUB_OUTPUT
           echo "passed=$passed" >> $GITHUB_OUTPUT
           echo "total=$total" >> $GITHUB_OUTPUT
@@ -148,7 +145,8 @@ jobs:
           pytest tests/test_get_booking.py -v --tb=short --timeout=60 --json-report --json-report-file=tools/output/get_results.json 2>&1 | tee tools/output/get_output.txt || true
           passed=$(python -c "import json; print(json.load(open('tools/output/get_results.json')).get('summary',{}).get('passed',0))" 2>/dev/null) || passed=0
           total=$(python -c "import json; print(json.load(open('tools/output/get_results.json')).get('summary',{}).get('total',0))" 2>/dev/null) || total=0
-          score=$(python -c "print(int(min(15, $passed * 2)))")
+          score=$((passed * 2))
+          [ $score -gt 15 ] && score=15
           echo "score=$score" >> $GITHUB_OUTPUT
           echo "passed=$passed" >> $GITHUB_OUTPUT
           echo "total=$total" >> $GITHUB_OUTPUT
@@ -183,7 +181,8 @@ jobs:
           pytest tests/test_create_booking.py -v --tb=short --timeout=60 --json-report --json-report-file=tools/output/create_results.json 2>&1 | tee tools/output/create_output.txt || true
           passed=$(python -c "import json; print(json.load(open('tools/output/create_results.json')).get('summary',{}).get('passed',0))" 2>/dev/null) || passed=0
           total=$(python -c "import json; print(json.load(open('tools/output/create_results.json')).get('summary',{}).get('total',0))" 2>/dev/null) || total=0
-          score=$(python -c "print(int(min(15, $passed * 2)))")
+          score=$((passed * 2))
+          [ $score -gt 15 ] && score=15
           echo "score=$score" >> $GITHUB_OUTPUT
           echo "passed=$passed" >> $GITHUB_OUTPUT
           echo "total=$total" >> $GITHUB_OUTPUT
@@ -218,7 +217,8 @@ jobs:
           pytest tests/test_update_booking.py -v --tb=short --timeout=60 --json-report --json-report-file=tools/output/update_results.json 2>&1 | tee tools/output/update_output.txt || true
           passed=$(python -c "import json; print(json.load(open('tools/output/update_results.json')).get('summary',{}).get('passed',0))" 2>/dev/null) || passed=0
           total=$(python -c "import json; print(json.load(open('tools/output/update_results.json')).get('summary',{}).get('total',0))" 2>/dev/null) || total=0
-          score=$(python -c "print(int(min(15, $passed * 2)))")
+          score=$((passed * 2))
+          [ $score -gt 15 ] && score=15
           echo "score=$score" >> $GITHUB_OUTPUT
           echo "passed=$passed" >> $GITHUB_OUTPUT
           echo "total=$total" >> $GITHUB_OUTPUT
@@ -253,7 +253,8 @@ jobs:
           pytest tests/test_delete_booking.py -v --tb=short --timeout=60 --json-report --json-report-file=tools/output/delete_results.json 2>&1 | tee tools/output/delete_output.txt || true
           passed=$(python -c "import json; print(json.load(open('tools/output/delete_results.json')).get('summary',{}).get('passed',0))" 2>/dev/null) || passed=0
           total=$(python -c "import json; print(json.load(open('tools/output/delete_results.json')).get('summary',{}).get('total',0))" 2>/dev/null) || total=0
-          score=$(python -c "print(int(min(10, $passed * 2)))")
+          score=$((passed * 2))
+          [ $score -gt 10 ] && score=10
           echo "score=$score" >> $GITHUB_OUTPUT
           echo "passed=$passed" >> $GITHUB_OUTPUT
           echo "total=$total" >> $GITHUB_OUTPUT
@@ -288,7 +289,8 @@ jobs:
           pytest tests/test_validation.py -v --tb=short --timeout=60 --json-report --json-report-file=tools/output/validation_results.json 2>&1 | tee tools/output/validation_output.txt || true
           passed=$(python -c "import json; print(json.load(open('tools/output/validation_results.json')).get('summary',{}).get('passed',0))" 2>/dev/null) || passed=0
           total=$(python -c "import json; print(json.load(open('tools/output/validation_results.json')).get('summary',{}).get('total',0))" 2>/dev/null) || total=0
-          score=$(python -c "print(int(min(10, $passed * 2)))")
+          score=$((passed * 2))
+          [ $score -gt 10 ] && score=10
           echo "score=$score" >> $GITHUB_OUTPUT
           echo "passed=$passed" >> $GITHUB_OUTPUT
           echo "total=$total" >> $GITHUB_OUTPUT
@@ -323,14 +325,15 @@ jobs:
           pytest tests/test_e2e.py -v --tb=short --timeout=120 --json-report --json-report-file=tools/output/e2e_results.json 2>&1 | tee tools/output/e2e_output.txt || true
           passed=$(python -c "import json; print(json.load(open('tools/output/e2e_results.json')).get('summary',{}).get('passed',0))" 2>/dev/null) || passed=0
           total=$(python -c "import json; print(json.load(open('tools/output/e2e_results.json')).get('summary',{}).get('total',0))" 2>/dev/null) || total=0
-          score=$(python -c "print(int(min(25, $passed * 5)))")
+          score=$((passed * 25))
+          [ $score -gt 25 ] && score=25
           echo "score=$score" >> $GITHUB_OUTPUT
           echo "passed=$passed" >> $GITHUB_OUTPUT
           echo "total=$total" >> $GITHUB_OUTPUT
           echo "$score" > tools/output/e2e_score.txt
 
   # ─────────────────────────────────────────────────────────────
-  # JOB 10: Итоговый отчёт (ТАБЛИЦА ВВЕРХУ)
+  # JOB 10: Итоговый отчёт
   # ─────────────────────────────────────────────────────────────
   final-summary:
     name: "📊 Итоговый отчёт"
@@ -347,104 +350,26 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Генерация итоговой таблицы
         run: |
-          # Считываем выходы из всех job
-          structure_score="${{ needs.check-structure.outputs.score || 0 }}"
-          lint_score="${{ needs.lint-code.outputs.score || 0 }}"
-          lint_errors="${{ needs.lint-code.outputs.error_count || 0 }}"
-          auth_score="${{ needs.test-auth.outputs.score || 0 }}"
-          auth_passed="${{ needs.test-auth.outputs.passed || 0 }}"
-          auth_total="${{ needs.test-auth.outputs.total || 0 }}"
-          get_score="${{ needs.test-get.outputs.score || 0 }}"
-          get_passed="${{ needs.test-get.outputs.passed || 0 }}"
-          get_total="${{ needs.test-get.outputs.total || 0 }}"
-          create_score="${{ needs.test-create.outputs.score || 0 }}"
-          create_passed="${{ needs.test-create.outputs.passed || 0 }}"
-          create_total="${{ needs.test-create.outputs.total || 0 }}"
-          update_score="${{ needs.test-update.outputs.score || 0 }}"
-          update_passed="${{ needs.test-update.outputs.passed || 0 }}"
-          update_total="${{ needs.test-update.outputs.total || 0 }}"
-          delete_score="${{ needs.test-delete.outputs.score || 0 }}"
-          delete_passed="${{ needs.test-delete.outputs.passed || 0 }}"
-          delete_total="${{ needs.test-delete.outputs.total || 0 }}"
-          validation_score="${{ needs.test-validation.outputs.score || 0 }}"
-          validation_passed="${{ needs.test-validation.outputs.passed || 0 }}"
-          validation_total="${{ needs.test-validation.outputs.total || 0 }}"
-          e2e_score="${{ needs.test-e2e.outputs.score || 0 }}"
-          e2e_passed="${{ needs.test-e2e.outputs.passed || 0 }}"
-          e2e_total="${{ needs.test-e2e.outputs.total || 0 }}"
-          
-          # Итоговые расчёты
-          total_tests_passed=$((auth_passed + get_passed + create_passed + update_passed + delete_passed + validation_passed + e2e_passed))
-          total_tests=$((auth_total + get_total + create_total + update_total + delete_total + validation_total + e2e_total))
-          total_score=$((structure_score + lint_score + auth_score + get_score + create_score + update_score + delete_score + validation_score + e2e_score))
-          max_score=115
-          percentage=$((total_score * 100 / max_score))
-          
-          # Оценка
-          if [ "$total_score" -ge 90 ]; then grade="🟢 Отлично"; status="Зачтено"
-          elif [ "$total_score" -ge 70 ]; then grade="🟡 Хорошо"; status="Зачтено"
-          elif [ "$total_score" -ge 50 ]; then grade="🟠 Удовлетворительно"; status="Зачтено"
-          else grade="🔴 Требуется доработка"; status="Не зачтено"; fi
-          
-          # Прогресс-бар
-          filled=$((percentage / 5))
-          empty=$((20 - filled))
-          progress=""
-          i=0
-          while [ $i -lt $filled ]; do progress="${progress}🟩"; i=$((i+1)); done
-          i=0
-          while [ $i -lt $empty ]; do progress="${progress}⬜"; i=$((i+1)); done
-          
-          # Статусы
-          s1=$([ "$structure_score" = "10" ] && echo "✅" || echo "❌")
-          s2=$([ "$lint_score" -ge 12 ] && echo "✅" || echo "⚠️")
-          s3=$([ "$auth_passed" -ge 6 ] && echo "✅" || echo "⚠️")
-          s4=$([ "$get_passed" -ge 6 ] && echo "✅" || echo "⚠️")
-          s5=$([ "$create_passed" -ge 6 ] && echo "✅" || echo "⚠️")
-          s6=$([ "$update_passed" -ge 6 ] && echo "✅" || echo "⚠️")
-          s7=$([ "$delete_passed" -ge 4 ] && echo "✅" || echo "⚠️")
-          s8=$([ "$validation_passed" -ge 3 ] && echo "✅" || echo "⚠️")
-          s9=$([ "$e2e_passed" -ge 1 ] && echo "✅" || echo "❌")
-          
-          # === ВЫВОД: ПРОСТЫЕ ECHO ===
           echo "# 🏆 ИТОГОВАЯ ОЦЕНКА" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Параметр | Значение |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|----------|" >> $GITHUB_STEP_SUMMARY
-          echo "| 💯 Баллы | **${total_score} / ${max_score}** |" >> $GITHUB_STEP_SUMMARY
-          echo "| 📈 Процент | **${percentage}%** |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🎓 Оценка | **${grade}** |" >> $GITHUB_STEP_SUMMARY
-          echo "| ✅ Статус | **${status}** |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🧪 Тестов пройдено | **${total_tests_passed} / ${total_tests}** |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## Прогресс" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "\`[${progress}]\` ${percentage}%" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "| 💯 Баллы | **${{ needs.check-structure.outputs.score || 0 }} + ${{ needs.lint-code.outputs.score || 0 }} + ${{ needs.test-auth.outputs.score || 0 }} + ${{ needs.test-get.outputs.score || 0 }} + ${{ needs.test-create.outputs.score || 0 }} + ${{ needs.test-update.outputs.score || 0 }} + ${{ needs.test-delete.outputs.score || 0 }} + ${{ needs.test-validation.outputs.score || 0 }} + ${{ needs.test-e2e.outputs.score || 0 }}** |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧪 Тестов пройдено | **${{ needs.test-auth.outputs.passed || 0 }} + ${{ needs.test-get.outputs.passed || 0 }} + ${{ needs.test-create.outputs.passed || 0 }} + ${{ needs.test-update.outputs.passed || 0 }} + ${{ needs.test-delete.outputs.passed || 0 }} + ${{ needs.test-validation.outputs.passed || 0 }} + ${{ needs.test-e2e.outputs.passed || 0 }}** |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## 📋 Детализация по категориям" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Категория | Тесты | Баллы | Статус |" >> $GITHUB_STEP_SUMMARY
-          echo "|-----------|-------|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| 📁 Структура | — | ${structure_score} / 10 | ${s1} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🧹 Линтинг | ${lint_errors} ошибок | ${lint_score} / 15 | ${s2} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🔐 Auth API | ${auth_passed} / ${auth_total} | ${auth_score} / 15 | ${s3} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 📋 GET Booking | ${get_passed} / ${get_total} | ${get_score} / 15 | ${s4} |" >> $GITHUB_STEP_SUMMARY
-          echo "| ➕ CREATE Booking | ${create_passed} / ${create_total} | ${create_score} / 15 | ${s5} |" >> $GITHUB_STEP_SUMMARY
-          echo "| ✏️ UPDATE Booking | ${update_passed} / ${update_total} | ${update_score} / 15 | ${s6} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🗑️ DELETE Booking | ${delete_passed} / ${delete_total} | ${delete_score} / 10 | ${s7} |" >> $GITHUB_STEP_SUMMARY
-          echo "| ✅ Validation | ${validation_passed} / ${validation_total} | ${validation_score} / 10 | ${s8} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🔄 E2E Tests | ${e2e_passed} / ${e2e_total} | ${e2e_score} / 25 | ${s9} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "---" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**💪 ИТОГО: ${total_score} баллов из ${max_score}**" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**🧪 Тестов: ${total_tests_passed} / ${total_tests}**" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "*GitHub Classroom Autograder • 2026.03*" >> $GITHUB_STEP_SUMMARY
-      
+          echo "| Категория | Тесты | Баллы |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 📁 Структура | — | ${{ needs.check-structure.outputs.score || 0 }} / 10 |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧹 Линтинг | ${{ needs.lint-code.outputs.error_count || 0 }} ошибок | ${{ needs.lint-code.outputs.score || 0 }} / 15 |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔐 Auth API | ${{ needs.test-auth.outputs.passed || 0 }} / ${{ needs.test-auth.outputs.total || 0 }} | ${{ needs.test-auth.outputs.score || 0 }} / 15 |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📋 GET Booking | ${{ needs.test-get.outputs.passed || 0 }} / ${{ needs.test-get.outputs.total || 0 }} | ${{ needs.test-get.outputs.score || 0 }} / 15 |" >> $GITHUB_STEP_SUMMARY
+          echo "| ➕ CREATE Booking | ${{ needs.test-create.outputs.passed || 0 }} / ${{ needs.test-create.outputs.total || 0 }} | ${{ needs.test-create.outputs.score || 0 }} / 15 |" >> $GITHUB_STEP_SUMMARY
+          echo "| ✏️ UPDATE Booking | ${{ needs.test-update.outputs.passed || 0 }} / ${{ needs.test-update.outputs.total || 0 }} | ${{ needs.test-update.outputs.score || 0 }} / 15 |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🗑️ DELETE Booking | ${{ needs.test-delete.outputs.passed || 0 }} / ${{ needs.test-delete.outputs.total || 0 }} | ${{ needs.test-delete.outputs.score || 0 }} / 10 |" >> $GITHUB_STEP_SUMMARY
+          echo "| ✅ Validation | ${{ needs.test-validation.outputs.passed || 0 }} / ${{ needs.test-validation.outputs.total || 0 }} | ${{ needs.test-validation.outputs.score || 0 }} / 10 |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔄 E2E Tests | ${{ needs.test-e2e.outputs.passed || 0 }} / ${{ needs.test-e2e.outputs.total || 0 }} | ${{ needs.test-e2e.outputs.score || 0 }} / 25 |" >> $GITHUB_STEP_SUMMARY
       - name: Upload артефактов
         if: always()
         uses: actions/upload-artifact@v4
