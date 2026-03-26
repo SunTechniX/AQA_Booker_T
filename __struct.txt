@@ -1,0 +1,36 @@
+booker-api-tests/
+├── .github/
+│   └── workflows/
+│       └── classroom.yml              # Автопроверка проектов
+├── api_client/
+│   ├── __init__.py
+│   ├── base_client.py                 # Базовый HTTP-клиент
+│   ├── auth_api.py                    # Эндпоинты /auth
+│   └── booking_api.py                 # Эндпоинты /booking
+├── schemas/
+│   ├── __init__.py
+│   ├── booking_schema.py              # JSON Schema для валидации
+│   └── bookings_list_schema.py
+├── tests/
+│   ├── __init__.py
+│   ├── test_auth.py                   # Кейсы TC_AUTH_*
+│   ├── test_get_booking.py            # Кейсы TC_GET_*
+│   ├── test_create_booking.py         # Кейсы TC_POST_*
+│   ├── test_update_booking.py         # Кейсы TC_PUT_*/TC_PATCH_*
+│   ├── test_delete_booking.py         # Кейсы TC_DEL_*
+│   ├── test_validation.py             # Кейсы TC_VAL_*, TC_ERR_*
+│   └── test_e2e.py                    # Кейсы TC_E2E_*, TC_PERF_*
+├── tools/
+│   ├── __init__.py
+│   ├── check_structure.py
+│   ├── write_summary_structure.py
+│   ├── write_summary_lint.py
+│   └── generate_final_summary.py
+├── logs/
+│   └── .gitkeep
+├── allure-results/
+│   └── .gitkeep
+├── conftest.py                        # Фикстуры: клиент, логирование
+├── pytest.ini                         # Конфигурация pytest
+├── requirements.txt                   # Зависимости
+└── README.md                          # Инструкция для студентов
